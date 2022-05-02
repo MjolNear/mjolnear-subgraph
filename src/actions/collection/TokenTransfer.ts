@@ -2,10 +2,10 @@ import {log, near} from "@graphprotocol/graph-ts";
 import {TxInfo} from "../../entities/TxInfo";
 import {parseDataArray} from "../../parser";
 import {ActivityEventType, createActivity} from "../../entities/Activity";
-import {Account, MarketToken} from "../../../generated/schema";
+import {MarketToken} from "../../../generated/schema";
 import {tokenUID} from "../../entities/Token";
 
-export function buy(
+export function tokenTransfer(
     receipt: near.ReceiptWithOutcome
 ): void {
 

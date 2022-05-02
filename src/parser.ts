@@ -1,5 +1,5 @@
 import {JSON, JSONArray, Maybe} from "./types";
-import {json, JSONValue} from "@graphprotocol/graph-ts";
+import {json} from "@graphprotocol/graph-ts";
 
 export function parseJsonString(jsonString: string): Maybe<JSON> {
     const jsonResult = json.try_fromString(jsonString)

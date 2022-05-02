@@ -1,4 +1,4 @@
-import {createCollection} from "./CreateCollection";
-import {handleRemoveCollection} from "./RemoveCollection";
+import {create} from "./Create";
+import {remove} from "./Remove";
 
-export {createCollection, handleRemoveCollection}
+export {create, remove}

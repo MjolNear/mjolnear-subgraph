@@ -1,6 +1,6 @@
 specVersion: 0.0.4
 description: MjolNear NFT marketplace API
-repository: https://github.com/MjolNear/graph-indexer
+repository: https://github.com/MjolNear/mjolnear-subgraph
 schema:
   file: ./schema.graphql
 features:
@@ -24,6 +24,7 @@ dataSources:
         - Account
         - Activity
         - Collection
+        - CollectionStatistic
         - Contract
         - TotalMarketStat
         - DailyMarketStat

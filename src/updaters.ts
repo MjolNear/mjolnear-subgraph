@@ -1,6 +1,6 @@
 import {DailyAccountStat, DailyCollectionStat, DailyMarketStat} from "../generated/schema";
 import {bigIntMin, nanosec2dayTimestamp} from "./utils";
-import {createMarketDailyStatistics} from "./factories";
+import {createMarketDailyStatistics} from "./entities/Statistics/MarketStatistics";
 import {BIG_INT_ONE, Maybe} from "./types";
 import {BigDecimal, BigInt} from "@graphprotocol/graph-ts";
 

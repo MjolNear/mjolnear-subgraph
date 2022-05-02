@@ -3,8 +3,10 @@ import {parseData} from "../../parser";
 import {Collection, CollectionMedia, CollectionTrait} from "../../../generated/schema";
 import {nanosec2timestamp} from "../../utils";
 import {getCollectionUID} from "../../entities/Collection";
+import {getOrCreateAccount} from "../../entities/Account";
+import {getOrCreateCollectionsStatistic} from "../../entities/Statistics/CollectionStatistics";
 
-export function createCollection(
+export function create(
     logs: string[],
     receipt: near.ReceiptWithOutcome
 ): void {
@@ -15,6 +17,7 @@ export function createCollection(
 
         const data = parseData(outcomeLog);
         if (!data) {
+            log.error("Create collection resolver: Parsing JSON error: {}", [outcomeLog])
             return;
         }
 
@@ -27,6 +30,7 @@ export function createCollection(
         const reference = data.get("reference")
 
         if (!collectionId || !contractId || !ownerId || !title || !description || !image || !reference) {
+            log.error("Create collection resolver: Missed JSON fields error", [])
             return
         }
 
@@ -40,12 +44,15 @@ export function createCollection(
 
             collection.collectionId = collectionId.toString()
             collection.contractId = contractId.toString()
-            collection.ownerId = ownerId.toString()
+            collection.owner = getOrCreateAccount(ownerId.toString()).id
             collection.title = title.toString()
             collection.description = description.toString()
             collection.image = image.toString()
             collection.reference = reference.isNull() ? null : reference.toString()
             collection.createdAt = nanosec2timestamp(receipt.block.header.timestampNanosec)
+            collection.statistics = uid
+
+            getOrCreateCollectionsStatistic(contractId.toString(), collectionId.toString())
 
             const collectionReference = collection.reference
             if (collectionReference && collectionReference.length > 21) {
@@ -61,8 +68,8 @@ export function createCollection(
 
                         const media = jsonMetadata.get("media")
                         if (media) {
-                            const mediaObject = new CollectionMedia(`${collectionId}-media`)
-                            mediaObject.collection = collectionId.toString()
+                            const mediaObject = new CollectionMedia(`${collectionId.toString()}-media`)
+                            mediaObject.collection = uid
                             collection.media = mediaObject.id
 
                             if (!media.isNull()) {
@@ -97,7 +104,7 @@ export function createCollection(
                                     const attribute = entry.key
                                     const values = entry.value.toArray()
                                     const trait = new CollectionTrait(`${collectionId}-${attribute}`)
-                                    trait.collection = collectionId.toString()
+                                    trait.collection = uid
                                     trait.attribute = attribute.trim()
                                     let traitValues: string[] = []
                                     for (let j = 0; j < values.length; j++) {

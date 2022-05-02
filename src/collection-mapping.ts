@@ -1,6 +1,6 @@
 import {near} from "@graphprotocol/graph-ts"
-import {createCollection} from "./actions/collection";
-import {handleRemoveCollection} from "./actions/collection"
+import {create} from "./actions/collection";
+import {remove} from "./actions/collection"
 
 export function handleReceipt(
     receipt: near.ReceiptWithOutcome
@@ -23,8 +23,8 @@ function handleAction(
     const methodName = functionCall.methodName
 
     if (methodName == "create_collection" || methodName == "add_collection") {
-        createCollection(logs, receiptWithOutcome)
-    } else if (methodName == "remove_collection") {
-        handleRemoveCollection(logs)
+        create(logs, receiptWithOutcome)
+    } else if (methodName == "remove_collection_dev") {
+        remove(logs)
     }
 }

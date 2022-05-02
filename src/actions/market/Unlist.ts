@@ -7,7 +7,7 @@ import {updateAccountListings} from "../../entities/Account";
 import {tokenUID} from "../../entities/Token";
 import {updateContractListings} from "../../entities/Contract";
 import {updateMarketListings} from "../../entities/Statistics/MarketStatistics";
-import {updateCollectionListings} from "../../entities/Collection";
+import {updateCollectionListings} from "../../entities/Statistics/CollectionStatistics";
 
 export function unlist(
     data: JSON,
@@ -44,6 +44,16 @@ export function unlist(
         null,
         null
     )
+
+    const traits = token.traits
+
+    if (traits) {
+        for (let j = 0; j < traits.length; j++) {
+            const traitKey = traits[j]
+            store.remove("TokenTrait", traitKey)
+        }
+    }
+
 
     store.remove("MarketToken", id);
 }

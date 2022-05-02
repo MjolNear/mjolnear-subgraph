@@ -1,27 +1,71 @@
 import {BIG_INT_ONE, Maybe} from "../../types";
-import {loadCollectionByUID} from "../Collection";
-import {BigInt} from "@graphprotocol/graph-ts";
+import {getCollectionUID} from "../Collection";
+import {BigDecimal, BigInt} from "@graphprotocol/graph-ts";
 import {bigIntMax} from "../../utils";
+import {CollectionStatistic} from "../../../generated/schema";
+
+
+export function getOrCreateCollectionsStatistic(
+    contractId: string,
+    collectionId: Maybe<string>
+): Maybe<CollectionStatistic> {
+    const uid = getCollectionUID(contractId, collectionId)
+    if (uid) {
+        let statistic = CollectionStatistic.load(uid)
+        if (!statistic) {
+            statistic = new CollectionStatistic(uid)
+            statistic.sales = BigInt.zero()
+            statistic.volume = BigInt.zero()
+            statistic.average = BigDecimal.zero()
+            statistic.listed = BigInt.zero()
+            statistic.save()
+        }
+        return statistic
+    }
+
+    return null
+}
+
+function loadCollectionStatisticByUID(
+    uid: Maybe<string>
+): Maybe<CollectionStatistic> {
+    if (uid) {
+        return CollectionStatistic.load(uid)
+    }
+
+    return null
+}
+
+export function updateCollectionListings(
+    uid: Maybe<string>,
+    amount: BigInt
+): void {
+    const statistic = loadCollectionStatisticByUID(uid)
+    if (statistic) {
+        statistic.listed = statistic.listed.plus(amount)
+        statistic.save()
+    }
+}
 
 export function updateCollectionStatsAfterSale(
     uid: Maybe<string>,
     price: string
 ): void {
-    const collection = loadCollectionByUID(uid)
-    if (collection) {
+    const statistic = loadCollectionStatisticByUID(uid)
+    if (statistic) {
         const bigIntPrice = BigInt.fromString(price)
-        collection.listed = collection.listed.minus(BIG_INT_ONE)
-        collection.sales = collection.sales.plus(BIG_INT_ONE)
-        collection.volume = collection.volume.plus(bigIntPrice)
-        collection.average = collection.volume.toBigDecimal().div(collection.sales.toBigDecimal())
+        statistic.listed = statistic.listed.minus(BIG_INT_ONE)
+        statistic.sales = statistic.sales.plus(BIG_INT_ONE)
+        statistic.volume = statistic.volume.plus(bigIntPrice)
+        statistic.average = statistic.volume.toBigDecimal().div(statistic.sales.toBigDecimal())
 
-        const highestSale = collection.highestSale
+        const highestSale = statistic.highestSale
         if (highestSale) {
-            collection.highestSale = bigIntMax(bigIntPrice, highestSale)
+            statistic.highestSale = bigIntMax(bigIntPrice, highestSale)
         } else {
-            collection.highestSale = bigIntPrice
+            statistic.highestSale = bigIntPrice
         }
 
-        collection.save()
+        statistic.save()
     }
 }

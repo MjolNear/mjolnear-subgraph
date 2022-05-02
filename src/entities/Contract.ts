@@ -1,5 +1,5 @@
 import {Contract} from "../../generated/schema";
-import {BIG_INT_ONE, Maybe} from "../types";
+import {Maybe} from "../types";
 import {BigDecimal, BigInt} from "@graphprotocol/graph-ts";
 
 export function isMarketplaceContract(contractId: string): boolean {

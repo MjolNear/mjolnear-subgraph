@@ -1,8 +1,18 @@
-import {TotalMarketStat} from "../../../generated/schema";
+import {DailyMarketStat, TotalMarketStat} from "../../../generated/schema";
 import {BigDecimal, BigInt} from "@graphprotocol/graph-ts";
 import {BIG_INT_ONE} from "../../types";
 
 const TOTAL_MARKET_STATS_KEY = "TOTAL_MARKET_STATS_KEY"
+
+export function createMarketDailyStatistics(
+    dayTimestamp: string,
+): DailyMarketStat {
+    const statistics = new DailyMarketStat(dayTimestamp)
+    statistics.sales = BigInt.zero()
+    statistics.volume = BigInt.zero()
+    statistics.timestamp = BigInt.fromString(dayTimestamp)
+    return statistics
+}
 
 function createMarketStatistics(): TotalMarketStat {
     const stats = new TotalMarketStat(TOTAL_MARKET_STATS_KEY)

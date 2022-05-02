@@ -1,6 +1,6 @@
 import {BIG_INT_ONE, JSON} from "../../types";
 import {BigInt, json, log, near} from "@graphprotocol/graph-ts";
-import {getCollectionUID, getOrCreateCollection} from "../../entities/Collection";
+import {getCollectionUID} from "../../entities/Collection";
 import {MarketToken, SavedToken, TokenTrait} from "../../../generated/schema";
 import {getOrCreateAccount, updateAccountListings} from "../../entities/Account";
 import {TxInfo} from "../../entities/TxInfo";
@@ -8,6 +8,7 @@ import {ActivityEventType, createActivity} from "../../entities/Activity";
 import {tokenUID} from "../../entities/Token";
 import {getOrCreateContract, updateContractListings} from "../../entities/Contract";
 import {updateMarketListings} from "../../entities/Statistics/MarketStatistics";
+import {getOrCreateCollectionsStatistic} from "../../entities/Statistics/CollectionStatistics";
 
 export function list(
     data: JSON,
@@ -132,10 +133,10 @@ export function list(
         updateAccountListings(getOrCreateAccount(ownerId.toString()), BIG_INT_ONE)
         updateContractListings(getOrCreateContract(contractId.toString()), BIG_INT_ONE)
 
-        const collection = getOrCreateCollection(contractId.toString(), collectionId, collectionName)
-        if (collection) {
-            collection.listed = collection.listed.plus(BIG_INT_ONE)
-            collection.save()
+        const statistic = getOrCreateCollectionsStatistic(contractId.toString(), collectionId)
+        if (statistic) {
+            statistic.listed = statistic.listed.plus(BIG_INT_ONE)
+            statistic.save()
         }
     }
 

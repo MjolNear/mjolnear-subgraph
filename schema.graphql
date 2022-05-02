@@ -87,7 +87,7 @@ type SavedToken @entity {
     tokenId: String!
     contract: Contract!
 
-    #   Metadata
+    # Metadata
     title: String!
     description: String
     media: String
@@ -148,6 +148,7 @@ type Account @entity {
     spent: BigDecimal!
     earned: BigDecimal!
     marketTokens: [MarketToken!]! @derivedFrom(field: "owner")
+    collections: [Collection!]! @derivedFrom(field: "owner")
 }
 
 # Activity
@@ -169,26 +170,21 @@ type Collection @entity {
 
     # Metadata
     id: ID!
+    owner: Account!
     contractId: String!
-    ownerId: String!
-    collectionId: String
-    title: String
+    collectionId: String!
+    title: String!
     description: String!
     image: String!
     bannerImage: String
     reference: String
     createdAt: BigInt!
 
+    statistics: CollectionStatistic!
+
     # Traits and media
     traits: [CollectionTrait!]! @derivedFrom(field: "collection")
     media: CollectionMedia
-
-    # Statistics
-    volume: BigInt!
-    sales: BigInt!
-    average: BigDecimal!
-    listed: BigInt!
-    highestSale: BigInt
 
     marketTokens: [MarketToken!]! @derivedFrom(field: "collection")
     activities: [Activity!]! @derivedFrom(field: "collection")
@@ -202,6 +198,15 @@ type CollectionMedia @entity {
     discord: String
     website: String
     telegram: String
+}
+
+type CollectionStatistic @entity {
+    id: ID!
+    volume: BigInt!
+    sales: BigInt!
+    average: BigDecimal!
+    listed: BigInt!
+    highestSale: BigInt
 }
 
 type CollectionTrait @entity {
