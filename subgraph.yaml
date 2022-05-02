@@ -1,0 +1,50 @@
+specVersion: 0.0.4
+description: MjolNear NFT marketplace API
+repository: https://github.com/MjolNear/graph-indexer
+schema:
+  file: ./schema.graphql
+features:
+  - ipfsOnEthereumContracts
+  - fullTextSearch
+dataSources:
+  - kind: near
+    name: MarketIndexer
+    network: near-mainnet
+    source:
+      account: "market.mjol.near"
+      startBlock: 59528128
+    mapping:
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/market-mapping.ts
+      entities:
+        - SavedToken
+        - MarketToken
+        - TokenTrait
+        - Account
+        - Activity
+        - Collection
+        - Contract
+        - TotalMarketStat
+        - DailyMarketStat
+        - DailyCollectionStat
+        - DailyAccountStat
+      receiptHandlers:
+        - handler: handleReceipt
+
+  - kind: near
+    name: CollectionIndexer
+    network: near-mainnet
+    source:
+      account: "mjol.near"
+      startBlock: 62609016
+    mapping:
+      apiVersion: 0.0.6
+      language: wasm/assemblyscript
+      file: ./src/collection-mapping.ts
+      entities:
+        - Collection
+        - CollectionTrait
+        - CollectionMedia
+      receiptHandlers:
+        - handler: handleReceipt

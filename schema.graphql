@@ -1,0 +1,264 @@
+type _Schema_
+
+@fulltext(
+    name: "marketSearch"
+    language: en
+    algorithm: proximityRank
+    include: [
+        {
+            entity: "MarketToken",
+            fields: [
+                { name: "title"           },
+                { name: "collectionTitle" }
+            ]
+        }
+    ]
+)
+
+@fulltext(
+    name: "accountSearch"
+    language: en
+    algorithm: proximityRank
+    include: [
+        {
+            entity: "Account",
+            fields: [
+                { name: "id" }
+            ]
+        }
+    ]
+)
+
+@fulltext(
+    name: "collectionsSearch"
+    language: en
+    algorithm: proximityRank
+    include: [
+        {
+            entity: "Collection",
+            fields: [
+                { name: "title"          },
+                { name: "contractId"     },
+                { name: "collectionId"   },
+                { name: "description"    }
+            ]
+        }
+    ]
+)
+
+@fulltext(
+    name: "activitySearch"
+    language: en
+    algorithm: proximityRank
+    include: [
+        {
+            entity: "Activity",
+            fields: [
+                { name: "txHash"    },
+            ]
+        }
+    ]
+)
+
+enum TokenCategory {
+    Games,
+    Art,
+    "3D",
+    PFP,
+    Photography,
+    Video
+}
+
+enum ActivityEventType {
+    Buy,
+    List,
+    Unlist,
+    Transferred,
+    UpdatePrice,
+    RemoveOffer,
+    MakeOffer,
+    AcceptOffer
+}
+
+type SavedToken @entity {
+    id: ID!
+
+    # Main token info
+    tokenId: String!
+    contract: Contract!
+
+    #   Metadata
+    title: String!
+    description: String
+    media: String
+    copies: BigInt
+    reference: String
+
+    # Collection info
+    collection: Collection
+    collectionTitle: String
+}
+
+type MarketToken @entity {
+    id: ID!
+
+    # Main token info
+    owner: Account!
+    tokenId: String!
+
+    # Contract info
+    contract: Contract!
+
+    #   Metadata
+    title: String!
+    description: String
+    media: String
+    copies: BigInt
+    reference: String
+
+    # Collection info
+    collection: Collection
+    collectionTitle: String
+
+    # Category
+    category: TokenCategory
+
+    traits: [TokenTrait!] @derivedFrom(field: "token")
+
+    # Listing info
+    price: BigInt!
+    listingTimestamp: BigInt!
+}
+
+
+type TokenTrait @entity {
+    id: ID!
+    token: MarketToken!
+    attribute: String!
+    value: String!
+}
+
+# Near account
+type Account @entity {
+    id: ID!
+    listed: BigInt!
+    sales: BigInt!
+    purchases: BigInt!
+    highestSale: BigInt
+    spent: BigDecimal!
+    earned: BigDecimal!
+    marketTokens: [MarketToken!]! @derivedFrom(field: "owner")
+}
+
+# Activity
+type Activity @entity {
+    id: ID!
+    token: SavedToken!
+    contract: Contract!
+    collection: Collection
+    timestamp: BigInt!
+    txHash: String!
+    blockHash: String!
+    owner: Account!
+    eventType: ActivityEventType!
+    buyer: Account
+    price: BigInt
+}
+
+type Collection @entity {
+
+    # Metadata
+    id: ID!
+    contractId: String!
+    ownerId: String!
+    collectionId: String
+    title: String
+    description: String!
+    image: String!
+    bannerImage: String
+    reference: String
+    createdAt: BigInt!
+
+    # Traits and media
+    traits: [CollectionTrait!]! @derivedFrom(field: "collection")
+    media: CollectionMedia
+
+    # Statistics
+    volume: BigInt!
+    sales: BigInt!
+    average: BigDecimal!
+    listed: BigInt!
+    highestSale: BigInt
+
+    marketTokens: [MarketToken!]! @derivedFrom(field: "collection")
+    activities: [Activity!]! @derivedFrom(field: "collection")
+    dailyStats: [DailyCollectionStat!]! @derivedFrom(field: "collection")
+}
+
+type CollectionMedia @entity {
+    id: ID!
+    collection: Collection!
+    twitter: String
+    discord: String
+    website: String
+    telegram: String
+}
+
+type CollectionTrait @entity {
+    id: ID!
+    collection: Collection!
+    attribute: String!
+    values: [String!]!
+}
+
+type Contract @entity {
+    id: ID!
+
+    name: String
+    isVerified: Boolean!
+
+    volume: BigInt!
+    sales: BigInt!
+    average: BigDecimal!
+    listed: BigInt!
+
+    marketTokens: [MarketToken!]! @derivedFrom(field: "contract")
+    activities: [Activity!]! @derivedFrom(field: "contract")
+}
+
+type DailyMarketStat @entity {
+    id: ID!
+    timestamp: BigInt!
+    sales: BigInt!
+    volume: BigInt!
+    average: BigDecimal!
+}
+
+
+type TotalMarketStat @entity {
+    id: ID!
+    listed: BigInt!
+    sales: BigInt!
+    volume: BigInt!
+    average: BigDecimal!
+}
+
+type DailyCollectionStat @entity {
+    id: ID!
+    collection: Collection!
+    timestamp: BigInt!
+    sales: BigInt!
+    volume: BigInt!
+    average: BigDecimal!
+    floor: BigInt!
+}
+
+type DailyAccountStat @entity {
+    id: ID!
+    account: Account!
+    timestamp: BigInt!
+    sales: BigInt!
+    purchases: BigInt!
+    spent: BigDecimal!
+    earned: BigDecimal!
+}
