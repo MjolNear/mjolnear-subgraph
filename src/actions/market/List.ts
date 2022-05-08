@@ -63,6 +63,7 @@ export function list(
 
     const savedToken = new SavedToken(id)
     savedToken.tokenId = tokenId.toString()
+    savedToken.contractId = contractId.toString()
     savedToken.contract = contractId.toString()
     savedToken.title = title.toString()
     savedToken.description = description.isNull()
@@ -87,6 +88,7 @@ export function list(
 
     const token = new MarketToken(id)
     token.tokenId = tokenId.toString()
+    token.contractId = contractId.toString()
     token.contract = contractId.toString()
     token.owner = ownerId.toString()
     token.title = title.toString()

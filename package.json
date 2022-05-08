@@ -6,7 +6,7 @@
     "gen": "graph codegen",
     "build": "graph build",
     "auth": "graph auth --product=hosted-service $API_KEY",
-    "deploy": "graph deploy --product=hosted-service mjolnear/backupv2",
+    "deploy": "graph deploy --product=hosted-service mjolnear/indexer",
     "pipe": "rm -rf generated/ && rm -rf build/ && yarn gen && yarn build && yarn deploy",
     "create-local": "graph create --node http://localhost:8020/ mjolnear/backupindyarnexer",
     "remove-local": "graph remove --node http://localhost:8020/ mjolnear/backupindexer",

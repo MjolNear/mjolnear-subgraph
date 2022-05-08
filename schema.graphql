@@ -9,6 +9,8 @@ type _Schema_
             entity: "MarketToken",
             fields: [
                 { name: "title"           },
+                { name: "contractId"      },
+                { name: "description"     },
                 { name: "collectionTitle" }
             ]
         }
@@ -85,6 +87,7 @@ type SavedToken @entity {
 
     # Main token info
     tokenId: String!
+    contractId: String!
     contract: Contract!
 
     # Metadata
@@ -104,6 +107,7 @@ type MarketToken @entity {
 
     # Main token info
     owner: Account!
+    contractId: String!
     tokenId: String!
 
     # Contract info
